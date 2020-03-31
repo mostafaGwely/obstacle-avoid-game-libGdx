@@ -1,4 +1,4 @@
-package com.obstacleavoid.util.debug;
+package com.obstacleavoid.util.debug.cameraController;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -6,24 +6,20 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Logger;
-import com.obstacleavoid.util.debug.cameraController.CameraController;
-import com.obstacleavoid.util.debug.cameraController.Keys;
+import com.obstacleavoid.util.debug.DebugCameraConfig;
 
-public class DebugCameraController implements CameraController {
-    public static final Logger logger = new Logger(DebugCameraController.class.getName(), Logger.DEBUG);
-
-
+public class DebugCameraController2 implements CameraController {
+    public static final Logger logger = new Logger(DebugCameraController2.class.getName(), Logger.DEBUG);
+    //Keys
+    Keys keys;
     //attributes
     private Vector2 position = new Vector2();
     private Vector2 startPosition = new Vector2();
     private float zoom = 1f;
     private DebugCameraConfig debugCameraConfig;
 
-    //Keys
-    Keys keys;
-
     //constructor
-    public DebugCameraController() {
+    public DebugCameraController2() {
         debugCameraConfig = new DebugCameraConfig();
         logger.info("camera config: " + debugCameraConfig);
         keys = new Keys(debugCameraConfig);
@@ -49,7 +45,6 @@ public class DebugCameraController implements CameraController {
 
         //handle clicks
         keys.doExecute(this, delta);
-
 
     }
 

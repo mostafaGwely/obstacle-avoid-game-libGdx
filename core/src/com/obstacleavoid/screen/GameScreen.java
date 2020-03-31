@@ -3,7 +3,6 @@ package com.obstacleavoid.screen;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.obstacleavoid.config.GameConfig;
@@ -17,7 +16,7 @@ import com.obstacleavoid.util.debug.DebugCameraController;
  */
 public class GameScreen implements Screen {
 
-    private static final Logger log = new Logger(GameScreen.class.getName(), Logger.DEBUG);
+//    private static final Logger log = new Logger(GameScreen.class.getName(), Logger.DEBUG);
 
     private OrthographicCamera camera;
     private Viewport viewport;
