@@ -3,13 +3,17 @@ package com.obstacleavoid.screen;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.obstacleavoid.config.GameConfig;
+import com.obstacleavoid.entity.Obstacle;
 import com.obstacleavoid.entity.Player;
 import com.obstacleavoid.util.GdxUtils;
 import com.obstacleavoid.util.ViewportUtils;
 import com.obstacleavoid.util.debug.DebugCameraController;
+
+import java.util.ArrayList;
 
 /**
  * Created by goran on 22/08/2016.
@@ -23,6 +27,10 @@ public class GameScreen implements Screen {
     private ShapeRenderer renderer;
     private DebugCameraController debugCameraController;
     private Player player;
+    private ArrayList<Obstacle> obstacles = new ArrayList<>();
+    private float obstacleTimer = GameConfig.OBSTACLE_SPAWN_TIME;
+
+    private boolean alive = true;
 
     @Override
     public void show() {
@@ -40,7 +48,6 @@ public class GameScreen implements Screen {
         float startPlayerY = 1;
 
 
-
         // position player
         player.setPosition(startPlayerX, startPlayerY);
     }
@@ -50,7 +57,8 @@ public class GameScreen implements Screen {
         debugCameraController.handleDebugInput(delta);
         debugCameraController.applyTo(camera);
         // update world
-        update(delta);
+        if (alive)
+            update(delta);
 
         // clear screen
         GdxUtils.clearScreen();
@@ -61,10 +69,47 @@ public class GameScreen implements Screen {
 
     private void update(float delta) {
         updatePlayer();
+        updateObstacles(delta);
+
+        if (isPlayerCollidingWithObstacle())
+            alive = false;
+
+    }
+
+    private boolean isPlayerCollidingWithObstacle() {
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.isPlayerColliding(player))
+                return true;
+        }
+        return false;
+    }
+
+    private void updateObstacles(float delta) {
+        for (Obstacle obstacle : obstacles)
+            obstacle.update(delta);
+        createNewObstacles();
+
+    }
+
+    private void createNewObstacles() {
+        if (MathUtils.random(1f) < obstacleTimer) {
+            Obstacle obstacle = new Obstacle();
+            obstacle.setPosition(MathUtils.random(player.getBoundsRadius(), GameConfig.WORLD_WIDTH - player.getBoundsRadius()),
+                    GameConfig.WORLD_HEIGHT - player.getBoundsRadius());
+            obstacles.add(obstacle);
+
+        }
     }
 
     private void updatePlayer() {
         player.update();
+        blockPlayerFromLeavingWorld();
+    }
+
+    private void blockPlayerFromLeavingWorld() {
+        player.setPosition(
+                MathUtils.clamp(player.getX(), player.getBoundsRadius(), GameConfig.WORLD_WIDTH - player.getBoundsRadius())
+                , 1);
     }
 
     private void renderDebug() {
@@ -81,6 +126,10 @@ public class GameScreen implements Screen {
 
     private void drawDebug() {
         player.drawDebug(renderer);
+        for (Obstacle obstacle :
+                obstacles) {
+            obstacle.drawDebug(renderer);
+        }
     }
 
     @Override
