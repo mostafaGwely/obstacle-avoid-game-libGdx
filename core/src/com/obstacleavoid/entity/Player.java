@@ -2,7 +2,9 @@ package com.obstacleavoid.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.obstacleavoid.config.GameConfig;
+import com.obstacleavoid.screen.GameRenderer;
 
 /**
  * Created by goran on 23/08/2016.
@@ -16,7 +18,6 @@ public class Player extends GameObjectBase {
         super(BOUNDS_RADIUS);
     }
 
-
     public void update() {
         float xSpeed = 0;
 
@@ -25,15 +26,21 @@ public class Player extends GameObjectBase {
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             xSpeed = -GameConfig.MAX_PLAYER_X_SPEED;
         }
+        Vector2 mousePosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+        GameRenderer.getViewPort().unproject(mousePosition);
 
-        setPosition(getX() + xSpeed, 0);
+        xSpeed = mousePosition.x - getX();
+
+
+        setX(getX() + xSpeed);
         updateBounds();
     }
 
-
-    public float getBoundsRadius() {
-        return BOUNDS_RADIUS;
+    public float getHeight() {
+        return SIZE;
     }
 
-
+    public float getWidth() {
+        return SIZE;
+    }
 }

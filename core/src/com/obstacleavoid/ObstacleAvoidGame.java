@@ -7,9 +7,9 @@ import com.obstacleavoid.screen.GameScreen;
 
 public class ObstacleAvoidGame extends Game {
 
-	@Override
-	public void create() {
-		Gdx.app.setLogLevel(Application.LOG_DEBUG);
-		setScreen(new GameScreen());
-	}
+    @Override
+    public void create() {
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        setScreen(new GameScreen());
+    }
 }
