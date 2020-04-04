@@ -24,9 +24,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         assetManager.load(AssetsDescriptor.FONT);
-        assetManager.load(AssetsDescriptor.PLAYER);
-        assetManager.load(AssetsDescriptor.OBSTACLE);
-        assetManager.load(AssetsDescriptor.BACKGROUND);
+        assetManager.load(AssetsDescriptor.GAME_PLAY);
 
         assetManager.finishLoading();
 

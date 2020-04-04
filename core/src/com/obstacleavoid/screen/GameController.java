@@ -64,6 +64,7 @@ public class GameController {
         if (isPlayerCollidingWithObstacle()) {
             log.debug("Collision detected.");
             lives--;
+            obstacles = new Array<>();
         }
     }
 

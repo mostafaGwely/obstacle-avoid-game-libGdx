@@ -2,16 +2,18 @@ package com.obstacleavoid.screen;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.obstacleavoid.assets.AssetsDescriptor;
+import com.obstacleavoid.assets.RegionNames;
 import com.obstacleavoid.config.GameConfig;
 import com.obstacleavoid.entity.Obstacle;
 import com.obstacleavoid.entity.Player;
@@ -36,9 +38,9 @@ public class GameRenderer implements Disposable {
     private SpriteBatch batch;
     private BitmapFont font;
     private DebugCameraController debugCameraController;
-    private Texture playerTexture;
-    private Texture obstacleTexture;
-    private Texture backgroundTexture;
+    private TextureRegion playerRegion;
+    private TextureRegion obstacleRegion;
+    private TextureRegion backgroundRegion;
 
     // == constructors ==
     public GameRenderer(AssetManager assetManager, GameController controller) {
@@ -66,15 +68,16 @@ public class GameRenderer implements Disposable {
         debugCameraController = new DebugCameraController();
         debugCameraController.setStartPosition(GameConfig.WORLD_CENTER_X, GameConfig.WORLD_CENTER_Y);
 
+        TextureAtlas gameplayAtlas = assetManager.get(AssetsDescriptor.GAME_PLAY);
+
         //player and obstacle and background texture
-        playerTexture = assetManager.get(AssetsDescriptor.PLAYER);
-        obstacleTexture = assetManager.get(AssetsDescriptor.OBSTACLE);
-        backgroundTexture = assetManager.get(AssetsDescriptor.BACKGROUND);
+        playerRegion = gameplayAtlas.findRegion(RegionNames.PLAYER);
+        obstacleRegion = gameplayAtlas.findRegion(RegionNames.OBSTACLE);
+        backgroundRegion = gameplayAtlas.findRegion(RegionNames.BACKGROUND);
     }
 
     // == public methods ==
     public void render(float delta) {
-        batch.totalRenderCalls = 0;
         // not wrapping inside alive cuz we want to be able to control camera even when there is game over
         debugCameraController.handleDebugInput(delta);
         debugCameraController.applyTo(camera);
@@ -89,7 +92,6 @@ public class GameRenderer implements Disposable {
 
         // render debug graphics
         renderDebug();
-        System.out.println("total render calls " + batch.totalRenderCalls);
     }
 
     private void renderGameplay() {
@@ -98,12 +100,12 @@ public class GameRenderer implements Disposable {
         batch.begin();
 
         Player player = controller.getPlayer();
-        batch.draw(backgroundTexture, 0, 0, GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT);
+        batch.draw(backgroundRegion, 0, 0, GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT);
 
-        batch.draw(playerTexture, player.getX() - player.getWidth() / 2, player.getY() - player.getHeight() / 2, player.getWidth(), player.getHeight());
+        batch.draw(playerRegion, player.getX() - player.getWidth() / 2, player.getY() - player.getHeight() / 2, player.getWidth(), player.getHeight());
 
         for (Obstacle o : controller.getObstacles())
-            batch.draw(obstacleTexture, o.getX() - o.getWidth() / 2, o.getY() - o.getHeight() / 2, o.getWidth(), o.getHeight());
+            batch.draw(obstacleRegion, o.getX() - o.getWidth() / 2, o.getY() - o.getHeight() / 2, o.getWidth(), o.getHeight());
 
         batch.end();
     }
