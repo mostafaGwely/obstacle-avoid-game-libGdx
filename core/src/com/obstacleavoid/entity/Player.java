@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.obstacleavoid.config.GameConfig;
-import com.obstacleavoid.screen.GameRenderer;
+import com.obstacleavoid.screen.game.GameRenderer;
 
 /**
  * Created by goran on 23/08/2016.
