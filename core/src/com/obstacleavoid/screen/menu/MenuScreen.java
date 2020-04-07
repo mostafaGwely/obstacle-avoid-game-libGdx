@@ -5,11 +5,9 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -18,7 +16,9 @@ import com.obstacleavoid.ObstacleAvoidGame;
 import com.obstacleavoid.assets.AssetsDescriptor;
 import com.obstacleavoid.assets.RegionNames;
 import com.obstacleavoid.config.GameConfig;
-import com.obstacleavoid.screen.game.GameScreen;
+import com.obstacleavoid.screen.menu.menuapi.HighScoreButton;
+import com.obstacleavoid.screen.menu.menuapi.OptionsButton;
+import com.obstacleavoid.screen.menu.menuapi.PlayButton;
 import com.obstacleavoid.util.GdxUtils;
 
 public class MenuScreen extends ScreenAdapter {
@@ -48,31 +48,11 @@ public class MenuScreen extends ScreenAdapter {
         table.setBackground(new TextureRegionDrawable(backgroundRegion));
 
         //play button
-        ImageButton playButton = createButton(
-                uiAtlas, RegionNames.PLAY, RegionNames.PLAY_PRESSED
-        );
-        playButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                play();
-            }
-        });
+        ImageButton playButton = new PlayButton(game).execute();
         //high score button
-        ImageButton highScoreButton = createButton(uiAtlas, RegionNames.HIGH_SCORE, RegionNames.HIGH_SCORE_PRESSED);
-        highScoreButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                highScore();
-            }
-        });
+        ImageButton highScoreButton = new HighScoreButton(game).execute();
         //options
-        ImageButton optionsButton = createButton(uiAtlas, RegionNames.OPTIONS, RegionNames.OPTIONS_PRESSED);
-        optionsButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                options();
-            }
-        });
+        ImageButton optionsButton = new OptionsButton(game).execute();
         //quite button
 
         //setup table
@@ -95,24 +75,6 @@ public class MenuScreen extends ScreenAdapter {
 
     }
 
-    private void play() {
-        game.setScreen(new GameScreen(game));
-    }
-
-    private void highScore() {
-        game.setScreen(new HighScoreScreen(game));
-    }
-
-    private void options() {
-        logger.debug("options()");
-    }
-
-    private ImageButton createButton(TextureAtlas atlas, String upRegionName, String downRegionName) {
-        TextureRegion upRegion = atlas.findRegion(upRegionName);
-        TextureRegion downRegion = atlas.findRegion(downRegionName);
-
-        return new ImageButton(new TextureRegionDrawable(upRegion), new TextureRegionDrawable(downRegion));
-    }
 
     @Override
     public void show() {

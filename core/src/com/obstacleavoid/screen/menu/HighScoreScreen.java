@@ -7,12 +7,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -22,6 +20,7 @@ import com.obstacleavoid.assets.AssetsDescriptor;
 import com.obstacleavoid.assets.RegionNames;
 import com.obstacleavoid.common.GameManager;
 import com.obstacleavoid.config.GameConfig;
+import com.obstacleavoid.screen.menu.menuapi.BackButton;
 import com.obstacleavoid.util.GdxUtils;
 
 public class HighScoreScreen extends ScreenAdapter {
@@ -65,13 +64,7 @@ public class HighScoreScreen extends ScreenAdapter {
         Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
 
         //back button
-        ImageButton backButton = createButton(uiAtlas, RegionNames.BACK, RegionNames.BACK_PRESSED);
-        backButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                back();
-            }
-        });
+        ImageButton backButton = new BackButton(game).execute();
         //quite button
 
         //setup table
@@ -99,19 +92,6 @@ public class HighScoreScreen extends ScreenAdapter {
         stage.addActor(table);
 
     }
-
-
-    private void back() {
-        game.setScreen(new MenuScreen(game));
-    }
-
-    private ImageButton createButton(TextureAtlas atlas, String upRegionName, String downRegionName) {
-        TextureRegion upRegion = atlas.findRegion(upRegionName);
-        TextureRegion downRegion = atlas.findRegion(downRegionName);
-
-        return new ImageButton(new TextureRegionDrawable(upRegion), new TextureRegionDrawable(downRegion));
-    }
-
 
     @Override
     public void resize(int width, int height) {
