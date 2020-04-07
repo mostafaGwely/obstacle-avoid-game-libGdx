@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.obstacleavoid.ObstacleAvoidGame;
 import com.obstacleavoid.assets.AssetsDescriptor;
 import com.obstacleavoid.config.GameConfig;
-import com.obstacleavoid.screen.game.GameScreen;
+import com.obstacleavoid.screen.menu.MenuScreen;
 import com.obstacleavoid.util.GdxUtils;
 
 public class LoadingScreen extends ScreenAdapter {
@@ -43,6 +43,7 @@ public class LoadingScreen extends ScreenAdapter {
 
         assetManager.load(AssetsDescriptor.FONT);
         assetManager.load(AssetsDescriptor.GAME_PLAY);
+        assetManager.load(AssetsDescriptor.UI);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class LoadingScreen extends ScreenAdapter {
         if (assetManager.update()) {
             waitTime -= delta;
             if (waitTime <= 0)
-                obstacleAvoidGame.setScreen(new GameScreen(obstacleAvoidGame));
+                obstacleAvoidGame.setScreen(new MenuScreen(obstacleAvoidGame));
         }
     }
 
