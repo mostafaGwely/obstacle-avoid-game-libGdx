@@ -20,24 +20,31 @@ public abstract class Button {
         this.assetManager = game.getAssetManager();
     }
 
-
-    protected ImageButton createButton(TextureAtlas atlas, String upRegionName, String downRegionName) {
+    protected ImageButton createButtonUpDown(
+            TextureAtlas atlas, String upRegionName, String downRegionName) {
         TextureRegion upRegion = atlas.findRegion(upRegionName);
         TextureRegion downRegion = atlas.findRegion(downRegionName);
 
-        return new ImageButton(new TextureRegionDrawable(upRegion), new TextureRegionDrawable(downRegion));
+        return new ImageButton(
+                new TextureRegionDrawable(upRegion), new TextureRegionDrawable(downRegion));
+    }
+
+    protected ImageButton createButton(TextureAtlas atlas, String upRegionName) {
+        TextureRegion upRegion = atlas.findRegion(upRegionName);
+
+        return new ImageButton(new TextureRegionDrawable(upRegion));
     }
 
     public ImageButton execute() {
-        button.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                doExecute();
-            }
+        button.addListener(
+                new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        doExecute();
+                    }
         });
         return button;
     }
-
 
     protected abstract void doExecute();
 }

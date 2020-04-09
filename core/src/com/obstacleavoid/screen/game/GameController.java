@@ -16,156 +16,154 @@ import com.obstacleavoid.entity.Player;
  */
 public class GameController {
 
-    // == constants ==
-    private static final Logger log = new Logger(GameController.class.getName(), Logger.DEBUG);
+  // == constants ==
+  private static final Logger log = new Logger(GameController.class.getName(), Logger.DEBUG);
 
-    // == attributes ==
-    private Player player;
-    private Array<Obstacle> obstacles = new Array<Obstacle>();
-    private float obstacleTimer;
-    private float scoreTimer;
-    private int lives = GameConfig.LIVES_START;
-    private int score;
-    private DifficultyLevel difficultyLevel = DifficultyLevel.MEDIUM;
-    private Pool<Obstacle> obstaclePool;
+  // == attributes ==
+  private Player player;
+  private Array<Obstacle> obstacles = new Array<Obstacle>();
+  private float obstacleTimer;
+  private float scoreTimer;
+  private int lives = GameConfig.LIVES_START;
+  private int score;
+  private Pool<Obstacle> obstaclePool;
 
+  // == constructors ==
+  public GameController() {
+    init();
+  }
 
-    // == constructors ==
-    public GameController() {
-        init();
+  // == init ==
+  private void init() {
+    // create player
+    player = new Player();
+
+    // calculate position
+    float startPlayerX = GameConfig.WORLD_WIDTH / 2f;
+    float startPlayerY = 1;
+
+    // position player
+    player.setPosition(startPlayerX, startPlayerY);
+
+    // create obstacle pool
+    obstaclePool = Pools.get(Obstacle.class, 40);
+  }
+
+  // == public methods ==
+  public void update(float delta) {
+    if (isGameOver()) {
+      GameManager.INSTANCE.updateHighScore(score);
+
+      return;
     }
 
-    // == init ==
-    private void init() {
-        // create player
-        player = new Player();
+    updatePlayer();
+    updateObstacles(delta);
+    updateScore(delta);
 
-        // calculate position
-        float startPlayerX = GameConfig.WORLD_WIDTH / 2f;
-        float startPlayerY = 1;
+    if (isPlayerCollidingWithObstacle()) {
+      log.debug("Collision detected.");
+      lives--;
+      obstacles = new Array<>();
+    }
+  }
 
-        // position player
-        player.setPosition(startPlayerX, startPlayerY);
+  public Player getPlayer() {
+    return player;
+  }
 
-        // create obstacle pool
-        obstaclePool = Pools.get(Obstacle.class, 40);
+  public Array<Obstacle> getObstacles() {
+    return obstacles;
+  }
+
+  public int getLives() {
+    return lives;
+  }
+
+  public int getScore() {
+    return score;
+  }
+
+  public boolean isGameOver() {
+    return lives <= 0;
+  }
+
+  private boolean isPlayerCollidingWithObstacle() {
+    for (Obstacle obstacle : obstacles) {
+      if (obstacle.isNotHit() && obstacle.isPlayerColliding(player)) {
+        return true;
+      }
     }
 
-    // == public methods ==
-    public void update(float delta) {
-        if (isGameOver()) {
-            GameManager.INSTANCE.updateHighScore(score);
-            return;
-        }
+    return false;
+  }
 
-        updatePlayer();
-        updateObstacles(delta);
-        updateScore(delta);
+  private void updatePlayer() {
+    player.update();
+    blockPlayerFromLeavingTheWorld();
+  }
 
-        if (isPlayerCollidingWithObstacle()) {
-            log.debug("Collision detected.");
-            lives--;
-            obstacles = new Array<>();
-        }
+  private void blockPlayerFromLeavingTheWorld() {
+    float playerX =
+            MathUtils.clamp(
+                    player.getX(), // value
+                    player.getWidth() / 2f, // min
+                    GameConfig.WORLD_WIDTH - player.getWidth() / 2f // max
+            );
+
+    player.setPosition(playerX, player.getY());
+  }
+
+  private void updateObstacles(float delta) {
+    for (Obstacle obstacle : obstacles) {
+      obstacle.update();
     }
 
-    public Player getPlayer() {
-        return player;
+    createNewObstacle(delta);
+    removePassedObstacles();
+  }
+
+  private void createNewObstacle(float delta) {
+    obstacleTimer += delta;
+
+    if (obstacleTimer >= GameConfig.OBSTACLE_SPAWN_TIME) {
+      float min = Obstacle.SIZE / 2f;
+      float max = GameConfig.WORLD_WIDTH - Obstacle.SIZE / 2f;
+
+      float obstacleX = MathUtils.random(min, max);
+      float obstacleY = GameConfig.WORLD_HEIGHT;
+
+      Obstacle obstacle = obstaclePool.obtain();
+
+      DifficultyLevel difficultyLevel = GameManager.INSTANCE.getDifficultyLevel();
+      obstacle.setYSpeed(difficultyLevel.getObstacleSpeed());
+
+      obstacle.setPosition(obstacleX, obstacleY);
+
+      obstacles.add(obstacle);
+      obstacleTimer = 0f;
     }
+  }
 
-    public Array<Obstacle> getObstacles() {
-        return obstacles;
+  private void removePassedObstacles() {
+    if (obstacles.size > 0) {
+      Obstacle first = obstacles.first();
+
+      float minObstacleY = -Obstacle.SIZE;
+
+      if (first.getY() < minObstacleY) {
+        obstacles.removeValue(first, true);
+        obstaclePool.free(first);
+      }
     }
+  }
 
-    public int getLives() {
-        return lives;
+  private void updateScore(float delta) {
+    scoreTimer += delta;
+
+    if (scoreTimer >= GameConfig.SCORE_MAX_TIME) {
+      score += MathUtils.random(1, 5);
+      scoreTimer = 0.0f;
     }
-
-    public int getScore() {
-        return score;
-    }
-
-    // == private methods ==
-    private boolean isGameOver() {
-        return lives <= 0;
-    }
-
-    private boolean isPlayerCollidingWithObstacle() {
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.isNotHit() && obstacle.isPlayerColliding(player)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void updatePlayer() {
-        player.update();
-        blockPlayerFromLeavingTheWorld();
-    }
-
-
-
-    private void blockPlayerFromLeavingTheWorld() {
-        float playerX = MathUtils.clamp(
-                player.getX(), // value
-                player.getWidth() / 2f, // min
-                GameConfig.WORLD_WIDTH - player.getWidth() / 2f // max
-        );
-
-        player.setPosition(playerX, player.getY());
-    }
-
-    private void updateObstacles(float delta) {
-        for (Obstacle obstacle : obstacles) {
-            obstacle.update();
-        }
-
-        createNewObstacle(delta);
-        removePassedObstacles();
-    }
-
-    private void createNewObstacle(float delta) {
-        obstacleTimer += delta;
-
-        if (obstacleTimer >= GameConfig.OBSTACLE_SPAWN_TIME) {
-            float min = Obstacle.SIZE / 2f;
-            float max = GameConfig.WORLD_WIDTH - Obstacle.SIZE / 2f;
-
-            float obstacleX = MathUtils.random(min, max);
-            float obstacleY = GameConfig.WORLD_HEIGHT;
-
-            Obstacle obstacle = obstaclePool.obtain();
-            obstacle.setYSpeed(difficultyLevel.getObstacleSpeed());
-            obstacle.setPosition(obstacleX, obstacleY);
-
-            obstacles.add(obstacle);
-            obstacleTimer = 0f;
-        }
-    }
-
-    private void removePassedObstacles() {
-        if (obstacles.size > 0) {
-            Obstacle first = obstacles.first();
-
-            float minObstacleY = -Obstacle.SIZE;
-
-            if (first.getY() < minObstacleY) {
-                obstacles.removeValue(first, true);
-                obstaclePool.free(first);
-            }
-        }
-    }
-
-    private void updateScore(float delta) {
-        scoreTimer += delta;
-
-        if (scoreTimer >= GameConfig.SCORE_MAX_TIME) {
-            score += MathUtils.random(1, 5);
-            scoreTimer = 0.0f;
-        }
-    }
-
-
+  }
 }

@@ -9,7 +9,7 @@ public class BackButton extends Button {
     public BackButton(ObstacleAvoidGame game) {
         super(game);
         atlas = assetManager.get(AssetsDescriptor.UI);
-        button = createButton(atlas, RegionNames.BACK, RegionNames.BACK_PRESSED);
+        button = createButtonUpDown(atlas, RegionNames.BACK, RegionNames.BACK_PRESSED);
     }
 
     @Override

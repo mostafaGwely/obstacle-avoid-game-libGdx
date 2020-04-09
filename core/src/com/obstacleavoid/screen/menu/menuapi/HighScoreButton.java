@@ -9,7 +9,7 @@ public class HighScoreButton extends Button {
     public HighScoreButton(ObstacleAvoidGame game) {
         super(game);
         atlas = assetManager.get(AssetsDescriptor.UI);
-        button = createButton(atlas, RegionNames.HIGH_SCORE, RegionNames.HIGH_SCORE_PRESSED);
+        button = createButtonUpDown(atlas, RegionNames.HIGH_SCORE, RegionNames.HIGH_SCORE_PRESSED);
     }
 
     @Override

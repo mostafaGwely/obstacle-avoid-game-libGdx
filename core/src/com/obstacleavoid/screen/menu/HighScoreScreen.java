@@ -1,107 +1,71 @@
 package com.obstacleavoid.screen.menu;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Logger;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.obstacleavoid.ObstacleAvoidGame;
 import com.obstacleavoid.assets.AssetsDescriptor;
 import com.obstacleavoid.assets.RegionNames;
 import com.obstacleavoid.common.GameManager;
-import com.obstacleavoid.config.GameConfig;
 import com.obstacleavoid.screen.menu.menuapi.BackButton;
-import com.obstacleavoid.util.GdxUtils;
+import com.obstacleavoid.screen.menu.menuapi.MenuBase;
 
-public class HighScoreScreen extends ScreenAdapter {
-    public static final Logger logger = new Logger(HighScoreScreen.class.getName(), Logger.DEBUG);
+public class HighScoreScreen extends MenuBase {
+  public static final Logger logger = new Logger(HighScoreScreen.class.getName(), Logger.DEBUG);
 
-    private final ObstacleAvoidGame game;
-    private final AssetManager assetManager;
-    private Viewport viewport;
-    private Stage stage;
+  public HighScoreScreen(ObstacleAvoidGame game) {
+    super(game);
+  }
 
-    public HighScoreScreen(ObstacleAvoidGame game) {
-        this.game = game;
-        this.assetManager = game.getAssetManager();
-    }
+  @Override
+  public void createUi() {
+    Table table = new Table();
+    //        table.setDebug(true);
 
-    @Override
-    public void show() {
-        viewport = new FitViewport(GameConfig.HUD_WIDTH, GameConfig.HUD_HEIGHT);
-        stage = new Stage(viewport, game.getBatch());
+    TextureAtlas gamePlayAtlas = assetManager.get(AssetsDescriptor.GAME_PLAY);
+    TextureAtlas uiAtlas = assetManager.get(AssetsDescriptor.UI);
 
-        Gdx.input.setInputProcessor(stage);
+    BitmapFont font = assetManager.get(AssetsDescriptor.FONT);
 
-        initUi();
-    }
+    TextureRegion backgroundRegion = gamePlayAtlas.findRegion(RegionNames.BACKGROUND);
+    TextureRegion panelRegion = uiAtlas.findRegion(RegionNames.PANEL);
 
-    private void initUi() {
-        Table table = new Table();
-//        table.setDebug(true);
+    table.setBackground(new TextureRegionDrawable(backgroundRegion));
 
-        TextureAtlas gamePlayAtlas = assetManager.get(AssetsDescriptor.GAME_PLAY);
-        TextureAtlas uiAtlas = assetManager.get(AssetsDescriptor.UI);
+    // label style
+    Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
 
-        BitmapFont font = assetManager.get(AssetsDescriptor.FONT);
+    // back button
+    ImageButton backButton = new BackButton(game).execute();
+    // quite button
 
-        TextureRegion backgroundRegion = gamePlayAtlas.findRegion(RegionNames.BACKGROUND);
-        TextureRegion panelRegion = uiAtlas.findRegion(RegionNames.PANEL);
+    // setup table
+    Table buttonTable = new Table();
+    buttonTable.defaults().pad(20);
+    buttonTable.center();
+    // background
+    buttonTable.setBackground(new TextureRegionDrawable(panelRegion));
+    // label
+    Label highScoreText = new Label("HIGHSCORE", labelStyle);
 
-        table.setBackground(new TextureRegionDrawable(backgroundRegion));
+    Label highScoreLabel = new Label(GameManager.INSTANCE.getHighScore(), labelStyle);
 
-        //label style
-        Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
+    buttonTable.add(highScoreText).row();
+    buttonTable.add(highScoreLabel).row();
+    buttonTable.add(backButton).row();
 
-        //back button
-        ImageButton backButton = new BackButton(game).execute();
-        //quite button
+    table.add(buttonTable);
 
-        //setup table
-        Table buttonTable = new Table();
-        buttonTable.defaults().pad(20);
-        buttonTable.center();
-        //background
-        buttonTable.setBackground(new TextureRegionDrawable(panelRegion));
-        //label
-        Label highScoreText = new Label("HIGHSCORE", labelStyle);
+    table.center();
+    table.setFillParent(true);
+    table.pack();
 
-        Label highScoreLabel = new Label(GameManager.INSTANCE.getHighScore(), labelStyle);
-
-        buttonTable.add(highScoreText).row();
-        buttonTable.add(highScoreLabel).row();
-        buttonTable.add(backButton).row();
-
-
-        table.add(buttonTable);
-
-        table.center();
-        table.setFillParent(true);
-        table.pack();
-
-        stage.addActor(table);
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-    }
-
-    @Override
-    public void render(float delta) {
-        GdxUtils.clearScreen();
-        stage.act();
-        stage.draw();
-    }
+    stage.addActor(table);
+  }
 }

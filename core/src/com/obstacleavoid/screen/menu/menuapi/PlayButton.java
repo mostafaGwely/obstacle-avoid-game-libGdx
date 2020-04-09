@@ -9,7 +9,7 @@ public class PlayButton extends Button {
     public PlayButton(ObstacleAvoidGame game) {
         super(game);
         atlas = assetManager.get(AssetsDescriptor.UI);
-        button = createButton(atlas, RegionNames.PLAY, RegionNames.PLAY_PRESSED);
+        button = createButtonUpDown(atlas, RegionNames.PLAY, RegionNames.PLAY_PRESSED);
     }
 
     @Override
