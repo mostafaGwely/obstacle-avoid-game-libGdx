@@ -32,6 +32,7 @@ public class GameManager {
             PREFS.putInteger(HIGH_SCORE_KEY, score);
             PREFS.flush();
         }
+        System.out.println(score);
         highScore = score;
     }
 

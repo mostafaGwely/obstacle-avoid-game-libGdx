@@ -34,6 +34,7 @@ public class GameScreen implements Screen {
 
   @Override
   public void render(float delta) {
+    //TODO check why the highScore didn't update
     controller.update(delta);
     renderer.render(delta);
     if (controller.isGameOver()) obstacleAvoidGame.setScreen(new MenuScreen(obstacleAvoidGame));

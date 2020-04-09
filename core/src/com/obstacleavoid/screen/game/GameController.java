@@ -51,12 +51,6 @@ public class GameController {
 
   // == public methods ==
   public void update(float delta) {
-    if (isGameOver()) {
-      GameManager.INSTANCE.updateHighScore(score);
-
-      return;
-    }
-
     updatePlayer();
     updateObstacles(delta);
     updateScore(delta);
@@ -64,7 +58,8 @@ public class GameController {
     if (isPlayerCollidingWithObstacle()) {
       log.debug("Collision detected.");
       lives--;
-      obstacles = new Array<>();
+      if (isGameOver()) GameManager.INSTANCE.updateHighScore(score);
+      else obstacles = new Array<>();
     }
   }
 
